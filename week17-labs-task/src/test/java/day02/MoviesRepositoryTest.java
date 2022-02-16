@@ -1,6 +1,8 @@
-package day01;
+package day02;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import day02.Movie;
+import day02.MoviesRepository;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

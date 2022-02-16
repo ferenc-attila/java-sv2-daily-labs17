@@ -28,6 +28,8 @@ class ActorsRepositoryTest {
     @Test
     void insertTest() {
         actorsRepository.saveActor("Jack Doe");
+        assertEquals(1, actorsRepository.findActorsWithPrefix("J").size());
+        assertEquals("Jack Doe", actorsRepository.findActorsWithPrefix("j").get(0));
     }
 
 }

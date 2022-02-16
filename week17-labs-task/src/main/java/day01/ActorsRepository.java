@@ -38,7 +38,6 @@ public class ActorsRepository {
                     String actorName = resultSet.getString("actor_name");
                     result.add(actorName);
                 }
-
             }
         } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot query!", sqle);

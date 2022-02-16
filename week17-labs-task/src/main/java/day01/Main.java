@@ -1,6 +1,8 @@
 package day01;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import day02.Movie;
+import day02.MoviesRepository;
 import org.flywaydb.core.Flyway;
 
 import java.time.LocalDate;
