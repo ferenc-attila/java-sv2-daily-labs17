@@ -1,6 +1,7 @@
 package day01;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import org.flywaydb.core.Flyway;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +13,9 @@ public class Main {
         dataSource.setUrl("jdbc:mysql://localhost:3306/movies-actors?useUnicode=true");
         dataSource.setUser("employees");
         dataSource.setPassword("employees");
+
+        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+        flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
 

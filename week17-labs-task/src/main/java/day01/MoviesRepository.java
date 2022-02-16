@@ -25,12 +25,12 @@ public class MoviesRepository {
         }
     }
 
-    public List<Movie> findAllMovies () {
+    public List<Movie> findAllMovies() {
         try (Connection connection = dataSource.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT id, title, release_date FROM movies");
-            ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement("SELECT id, title, release_date FROM movies");
+             ResultSet resultSet = statement.executeQuery()) {
             return processResultSet(resultSet);
-        }catch (SQLException sqle) {
+        } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot query!", sqle);
         }
     }
