@@ -5,6 +5,8 @@ import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ActorsRepositoryTest {
@@ -27,9 +29,14 @@ class ActorsRepositoryTest {
 
     @Test
     void insertTest() {
-        actorsRepository.saveActor("Jack Doe");
-        assertEquals(1, actorsRepository.findActorsWithPrefix("J").size());
-        assertEquals("Jack Doe", actorsRepository.findActorsWithPrefix("j").get(0));
+        actorsRepository.saveActorAndGetGeneratedKey("Jack Doe");
+        Optional<Actor> expected = actorsRepository.findActorByName("Jack Doe");
+        assertEquals("Jack Doe", actorsRepository.findActorByName("Jack Doe").get().getName());
+    }
+
+    @Test
+    void addActorTest() {
+
     }
 
 }

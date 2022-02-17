@@ -1,8 +1,6 @@
 package day01;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
-import day02.Movie;
-import day02.MoviesRepository;
 import org.flywaydb.core.Flyway;
 
 import java.time.LocalDate;
@@ -17,12 +15,16 @@ public class Main {
         dataSource.setPassword("employees");
 
         Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+        flyway.clean();
         flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
-
         MoviesRepository moviesRepository = new MoviesRepository(dataSource);
-        moviesRepository.saveMovie("Titanic", LocalDate.of(1997,12,11));
+        ActorsMoviesRepository actorsMoviesRepository = new ActorsMoviesRepository(dataSource);
+        ActorsMoviesService actorsMoviesService = new ActorsMoviesService(actorsRepository, moviesRepository, actorsMoviesRepository);
+
+        actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.of(1997, 12, 11), List.of("Leonardo DiCaprio","Kate Winslet"));
+        actorsMoviesService.insertMovieWithActors("Great Gatsby", LocalDate.of(1997, 12, 11), List.of("Leonardo DiCaprio", "Toby"));
         List<Movie> movies = moviesRepository.findAllMovies();
         System.out.println(movies.size());
     }

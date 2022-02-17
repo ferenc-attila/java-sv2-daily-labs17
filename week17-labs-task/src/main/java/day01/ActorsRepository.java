@@ -1,12 +1,10 @@
 package day01;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ActorsRepository {
 
@@ -16,14 +14,46 @@ public class ActorsRepository {
         this.dataSource = dataSource;
     }
 
-    public void saveActor(String name) {
+    public Long saveActorAndGetGeneratedKey(String name) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("insert into actors(actor_name) values(?)")
+             PreparedStatement statement = connection.prepareStatement("insert into actors(actor_name) values(?)",
+                     Statement.RETURN_GENERATED_KEYS)
         ) {
             statement.setString(1, name);
             statement.executeUpdate();
+            return executeAndGetGeneratedKey(statement);
         } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot update", sqle);
+        }
+    }
+
+    private long executeAndGetGeneratedKey(PreparedStatement statement) {
+        try (ResultSet resultSet = statement.getGeneratedKeys()) {
+            if (resultSet.next()) {
+                return resultSet.getLong(1);
+            }
+            throw new SQLException("No keys heas generated!");
+        } catch (SQLException sqle) {
+            throw new IllegalArgumentException("Error by insert", sqle);
+        }
+    }
+
+    public Optional<Actor> findActorByName(String name) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM actors WHERE actor_name=?")) {
+            statement.setString(1, name);
+            return getActor(statement);
+        } catch (SQLException sqle) {
+            throw new IllegalStateException("Cannot connect!");
+        }
+    }
+
+    private Optional<Actor> getActor(PreparedStatement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return Optional.of(new Actor(resultSet.getLong("id"), resultSet.getString("actor_name")));
+            }
+            return Optional.empty();
         }
     }
 

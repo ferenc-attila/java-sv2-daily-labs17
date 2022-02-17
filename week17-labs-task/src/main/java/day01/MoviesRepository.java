@@ -1,4 +1,6 @@
-package day02;
+package day01;
+
+import day01.Movie;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -14,12 +16,21 @@ public class MoviesRepository {
         this.dataSource = dataSource;
     }
 
-    public void saveMovie(String title, LocalDate releaseDate) {
+    public long saveMovie(String title, LocalDate releaseDate) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("INSERT INTO movies(title, release_date) VALUES (?,?)")) {
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO movies(title, release_date) VALUES (?,?)",
+                     Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, title);
             statement.setDate(2, Date.valueOf(releaseDate));
             statement.executeUpdate();
+
+            try(ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    return resultSet.getLong(1);
+                }
+                throw new IllegalStateException("Cannot insert");
+            }
+
         } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot connect!", sqle);
         }

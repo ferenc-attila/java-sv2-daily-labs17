@@ -1,8 +1,8 @@
-package day02;
+package day01;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
-import day02.Movie;
-import day02.MoviesRepository;
+import day01.Movie;
+import day01.MoviesRepository;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class MoviesRepositoryTest {
 
     @Test
     void insertThanQueryTest() {
-        moviesRepository.saveMovie("Lord Of The Rings", LocalDate.of(2000,12,5));
+        moviesRepository.saveMovie("Lord Of The Rings", LocalDate.of(2000, 12, 5));
         List<Movie> movies = moviesRepository.findAllMovies();
         assertEquals(1, movies.size());
         assertEquals("Lord Of The Rings", movies.get(0).getTitle());
@@ -40,11 +40,11 @@ class MoviesRepositoryTest {
 
     @Test
     void insertTwoTest() {
-        moviesRepository.saveMovie("Lord Of The Rings", LocalDate.of(2000,12,5));
-        moviesRepository.saveMovie("Kill Bill", LocalDate.of(2003,2,15));
+        moviesRepository.saveMovie("Lord Of The Rings", LocalDate.of(2000, 12, 5));
+        moviesRepository.saveMovie("Kill Bill", LocalDate.of(2003, 2, 15));
         List<Movie> movies = moviesRepository.findAllMovies();
         assertEquals(2, movies.size());
         assertEquals("Kill Bill", movies.get(1).getTitle());
-        assertEquals(LocalDate.of(2000,12,5), movies.get(0).getLocalDate());
+        assertEquals(LocalDate.of(2000, 12, 5), movies.get(0).getLocalDate());
     }
 }
