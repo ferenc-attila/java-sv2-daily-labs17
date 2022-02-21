@@ -30,5 +30,15 @@ public class ActorsMoviesService {
         }
     }
 
+    public ActorsRepository getActorsRepository() {
+        return actorsRepository;
+    }
 
+    public MoviesRepository getMoviesRepository() {
+        return moviesRepository;
+    }
+
+    public ActorsMoviesRepository getActorsMoviesRepository() {
+        return actorsMoviesRepository;
+    }
 }

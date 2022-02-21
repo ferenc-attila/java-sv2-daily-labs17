@@ -1,8 +1,6 @@
 package day01;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
-import day01.Movie;
-import day01.MoviesRepository;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,14 +8,16 @@ import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MoviesRepositoryTest {
+class RatingsRepositoryTest {
 
+    RatingsRepository ratingsRepository;
     MoviesRepository moviesRepository;
+    MoviesRatingService moviesRatingService;
 
     @BeforeEach
     void init() {
@@ -31,43 +31,26 @@ class MoviesRepositoryTest {
         flyway.migrate();
 
         moviesRepository = new MoviesRepository(dataSource);
+        ratingsRepository = new RatingsRepository(dataSource);
+        moviesRatingService = new MoviesRatingService(moviesRepository, ratingsRepository);
     }
 
     @Test
-    void insertThanQueryTest() {
+    void insertRatingsTest() {
         moviesRepository.saveMovie("Lord Of The Rings", LocalDate.of(2000, 12, 5));
-        List<Movie> movies = moviesRepository.findAllMovies();
-        assertEquals(1, movies.size());
-        assertEquals("Lord Of The Rings", movies.get(0).getTitle());
+        ratingsRepository.insertRatings(1, Arrays.asList(1,4,3,5,2));
+        List<Long> expected = Arrays.asList(1L, 2L, 3L, 4L, 5L);
+
+        assertEquals(expected, ratingsRepository.getRatingsByMovieTitle("Lord Of The Rings"));
     }
 
     @Test
-    void insertTwoTest() {
+    void insertInvalidRatingsTest() {
         moviesRepository.saveMovie("Lord Of The Rings", LocalDate.of(2000, 12, 5));
-        moviesRepository.saveMovie("Kill Bill", LocalDate.of(2003, 2, 15));
-        List<Movie> movies = moviesRepository.findAllMovies();
-        assertEquals(2, movies.size());
-        assertEquals("Kill Bill", movies.get(1).getTitle());
-        assertEquals(LocalDate.of(2000, 12, 5), movies.get(0).getLocalDate());
-    }
 
-    @Test
-    void findMovieByTitle() {
-        moviesRepository.saveMovie("Lord Of The Rings", LocalDate.of(2000, 12, 5));
-        moviesRepository.saveMovie("Kill Bill", LocalDate.of(2003, 2, 15));
-        assertEquals("Kill Bill", moviesRepository.findMovieByTitle("Kill Bill").get().getTitle());
-        assertEquals(LocalDate.parse("2000-12-05"), moviesRepository.findMovieByTitle("Lord Of The Rings").get().getLocalDate());
-        assertEquals(Optional.empty(), moviesRepository.findMovieByTitle("Star Wars"));
-    }
-
-    @Test
-    void finAllMoviesTest() {
-        moviesRepository.saveMovie("Lord Of The Rings", LocalDate.of(2000, 12, 5));
-        moviesRepository.saveMovie("Kill Bill", LocalDate.of(2003, 2, 15));
-        List<Movie> movies = moviesRepository.findAllMovies();
-        assertEquals(2, movies.size());
-        assertEquals("Lord Of The Rings", movies.get(0).getTitle());
-        assertEquals(LocalDate.parse("2003-02-15"), movies.get(1).getLocalDate());
+        IllegalArgumentException iae = assertThrows(IllegalArgumentException.class, () -> ratingsRepository.insertRatings(1, Arrays.asList(1,4,3,6,2)));
+        assertEquals("Invalid rating value in the list: 6", iae.getMessage());
+        assertTrue(ratingsRepository.getRatingsByMovieTitle("Lord Of The Rings").isEmpty());
     }
 
     @Test
@@ -77,10 +60,10 @@ class MoviesRepositoryTest {
         invalidDataSource.setUser("employees");
         invalidDataSource.setPassword("employees");
 
-        MoviesRepository invalidRepository = new MoviesRepository(invalidDataSource);
+        RatingsRepository invalidRepository = new RatingsRepository(invalidDataSource);
 
-        IllegalStateException ise = assertThrows(IllegalStateException.class, () -> invalidRepository.saveMovie("Meseautó", LocalDate.of(1934, 12,14)));
-        assertEquals("Cannot connect!", ise.getMessage());
+        IllegalStateException ise = assertThrows(IllegalStateException.class, () -> invalidRepository.insertRatings(1, Arrays.asList(1,2,3)));
+        assertEquals("Cannot insert!", ise.getMessage());
         assertEquals("Unknown database 'movies-actors-invalid-test'", ise.getCause().getMessage());
         assertEquals(SQLSyntaxErrorException.class, ise.getCause().getClass());
     }
@@ -92,10 +75,10 @@ class MoviesRepositoryTest {
         invalidDataSource.setUser("emp");
         invalidDataSource.setPassword("employees");
 
-        MoviesRepository invalidRepository = new MoviesRepository(invalidDataSource);
+        RatingsRepository invalidRepository = new RatingsRepository(invalidDataSource);
 
-        IllegalStateException ise = assertThrows(IllegalStateException.class, () -> invalidRepository.findMovieByTitle("Meseautó"));
-        assertEquals("Cannot connect!", ise.getMessage());
+        IllegalStateException ise = assertThrows(IllegalStateException.class, () -> invalidRepository.insertRatings(1, Arrays.asList(1,2,3)));
+        assertEquals("Cannot insert!", ise.getMessage());
         assertTrue(ise.getCause().getMessage().startsWith("Access denied for user 'emp'"));
         assertEquals(SQLException.class, ise.getCause().getClass());
     }
@@ -107,10 +90,10 @@ class MoviesRepositoryTest {
         invalidDataSource.setUser("employees");
         invalidDataSource.setPassword("emp");
 
-        MoviesRepository invalidRepository = new MoviesRepository(invalidDataSource);
+        RatingsRepository invalidRepository = new RatingsRepository(invalidDataSource);
 
-        IllegalStateException ise = assertThrows(IllegalStateException.class, () -> invalidRepository.findAllMovies());
-        assertEquals("Cannot query!", ise.getMessage());
+        IllegalStateException ise = assertThrows(IllegalStateException.class, () -> invalidRepository.insertRatings(1, Arrays.asList(1,2,3)));
+        assertEquals("Cannot insert!", ise.getMessage());
         assertTrue(ise.getCause().getMessage().startsWith("Access denied for user 'employees'"));
         assertEquals(SQLException.class, ise.getCause().getClass());
     }

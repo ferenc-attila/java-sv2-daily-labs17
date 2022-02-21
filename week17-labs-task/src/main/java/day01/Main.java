@@ -15,17 +15,20 @@ public class Main {
         dataSource.setPassword("employees");
 
         Flyway flyway = Flyway.configure().dataSource(dataSource).load();
-        flyway.clean();
         flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
         MoviesRepository moviesRepository = new MoviesRepository(dataSource);
+        RatingsRepository ratingsRepository = new RatingsRepository(dataSource);
         ActorsMoviesRepository actorsMoviesRepository = new ActorsMoviesRepository(dataSource);
         ActorsMoviesService actorsMoviesService = new ActorsMoviesService(actorsRepository, moviesRepository, actorsMoviesRepository);
+        MoviesRatingService moviesRatingService = new MoviesRatingService(moviesRepository, ratingsRepository);
 
-        actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.of(1997, 12, 11), List.of("Leonardo DiCaprio","Kate Winslet"));
-        actorsMoviesService.insertMovieWithActors("Great Gatsby", LocalDate.of(1997, 12, 11), List.of("Leonardo DiCaprio", "Toby"));
+//        actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.of(1997, 12, 11), List.of("Leonardo DiCaprio","Kate Winslet"));
+//        actorsMoviesService.insertMovieWithActors("Great Gatsby", LocalDate.of(1997, 12, 11), List.of("Leonardo DiCaprio", "Toby"));
         List<Movie> movies = moviesRepository.findAllMovies();
         System.out.println(movies.size());
+//        moviesRatingService.insertRatings("Titanic", 5,3,2);
+        moviesRatingService.insertRatings("Great Gatsby", 1,3,6,2);
     }
 }

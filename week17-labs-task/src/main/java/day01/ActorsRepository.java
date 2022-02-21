@@ -32,7 +32,7 @@ public class ActorsRepository {
             if (resultSet.next()) {
                 return resultSet.getLong(1);
             }
-            throw new SQLException("No keys heas generated!");
+            throw new SQLException("No keys has generated!");
         } catch (SQLException sqle) {
             throw new IllegalArgumentException("Error by insert", sqle);
         }
@@ -44,7 +44,7 @@ public class ActorsRepository {
             statement.setString(1, name);
             return getActor(statement);
         } catch (SQLException sqle) {
-            throw new IllegalStateException("Cannot connect!");
+            throw new IllegalStateException("Cannot connect!", sqle);
         }
     }
 
