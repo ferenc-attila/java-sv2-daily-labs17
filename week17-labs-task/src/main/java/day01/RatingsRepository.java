@@ -7,11 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RatingsRepository {
 
-    DataSource dataSource;
+    private DataSource dataSource;
 
     public RatingsRepository(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -36,13 +35,13 @@ public class RatingsRepository {
     public List<Long> getRatingsByMovieId(long movieId) {
         List<Long> ratings = new ArrayList<>();
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT rating FROM ratings WHERE movie_id = ? ORDER BY rating");
+             PreparedStatement statement = connection.prepareStatement("SELECT rating FROM ratings WHERE movie_id = ? ORDER BY rating")
         ) {
             statement.setLong(1, movieId);
             createListOfRatings(ratings, statement);
             return ratings;
         } catch (SQLException sqle) {
-            throw new IllegalStateException("Cannot connect!");
+            throw new IllegalStateException("Cannot connect!", sqle);
         }
     }
 
@@ -56,7 +55,7 @@ public class RatingsRepository {
         }
     }
 
-    private void rollbackIfInvalidRating(Connection connection, Integer actual) throws SQLException{
+    private void rollbackIfInvalidRating(Connection connection, Integer actual) throws SQLException {
         if (actual < 1 || actual > 5) {
             connection.rollback();
             throw new IllegalArgumentException("Invalid rating value in the list: " + actual);

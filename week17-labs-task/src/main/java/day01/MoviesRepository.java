@@ -1,7 +1,5 @@
 package day01;
 
-import day01.Movie;
-
 import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDate;
@@ -89,8 +87,7 @@ public class MoviesRepository {
             statement.setLong(2, movieId);
             statement.executeUpdate();
         } catch (SQLException sqle) {
-            throw new IllegalStateException("Cannot update!");
+            throw new IllegalStateException("Cannot update!", sqle);
         }
-
     }
 }

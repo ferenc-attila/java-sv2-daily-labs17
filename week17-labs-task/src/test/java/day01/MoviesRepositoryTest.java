@@ -1,8 +1,6 @@
 package day01;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
-import day01.Movie;
-import day01.MoviesRepository;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +59,7 @@ class MoviesRepositoryTest {
     }
 
     @Test
-    void finAllMoviesTest() {
+    void findAllMoviesTest() {
         moviesRepository.saveMovie("Lord Of The Rings", LocalDate.of(2000, 12, 5));
         moviesRepository.saveMovie("Kill Bill", LocalDate.of(2003, 2, 15));
         List<Movie> movies = moviesRepository.findAllMovies();
@@ -109,7 +107,7 @@ class MoviesRepositoryTest {
 
         MoviesRepository invalidRepository = new MoviesRepository(invalidDataSource);
 
-        IllegalStateException ise = assertThrows(IllegalStateException.class, () -> invalidRepository.findAllMovies());
+        IllegalStateException ise = assertThrows(IllegalStateException.class, invalidRepository::findAllMovies);
         assertEquals("Cannot query!", ise.getMessage());
         assertTrue(ise.getCause().getMessage().startsWith("Access denied for user 'employees'"));
         assertEquals(SQLException.class, ise.getCause().getClass());

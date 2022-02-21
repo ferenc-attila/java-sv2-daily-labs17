@@ -1,5 +1,7 @@
 package day01;
 
+import java.util.Objects;
+
 public class Actor {
 
     private Long id;
@@ -16,6 +18,19 @@ public class Actor {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Actor actor = (Actor) o;
+        return name.equals(actor.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     public Long getId() {

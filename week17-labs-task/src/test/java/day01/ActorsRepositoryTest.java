@@ -32,7 +32,6 @@ class ActorsRepositoryTest {
     @Test
     void insertTest() {
         Long id = actorsRepository.saveActorAndGetGeneratedKey("Jack Doe");
-        Optional<Actor> expected = actorsRepository.findActorByName("Jack Doe");
         assertEquals(1, id);
         assertEquals("Jack Doe", actorsRepository.findActorByName("Jack Doe").get().getName());
         Long anotherId = actorsRepository.saveActorAndGetGeneratedKey("John Doe");

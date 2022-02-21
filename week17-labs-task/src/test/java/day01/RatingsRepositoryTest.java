@@ -32,7 +32,6 @@ class RatingsRepositoryTest {
 
         moviesRepository = new MoviesRepository(dataSource);
         ratingsRepository = new RatingsRepository(dataSource);
-        moviesRatingService = new MoviesRatingService(moviesRepository, ratingsRepository);
     }
 
     @Test

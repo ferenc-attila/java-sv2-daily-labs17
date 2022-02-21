@@ -3,7 +3,6 @@ package day01;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.flywaydb.core.Flyway;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public class Main {
@@ -29,6 +28,6 @@ public class Main {
         List<Movie> movies = moviesRepository.findAllMovies();
         System.out.println(movies.size());
 //        moviesRatingService.insertRatings("Titanic", 5,3,2);
-        moviesRatingService.insertRatings("Great Gatsby", 1,3,6,2);
+        moviesRatingService.insertRatings("Great Gatsby", 1, 3, 6, 2);
     }
 }
